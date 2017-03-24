@@ -107,7 +107,7 @@ var DragDropTouch;
             ddt._imgOffset = { x: offsetX, y: offsetY };
         };
         return DataTransfer;
-    }());
+    })();
     DragDropTouch_1.DataTransfer = DataTransfer;
     /**
      * Defines a class that adds support for touch-based HTML5 drag/drop operations.
@@ -140,10 +140,10 @@ var DragDropTouch;
             // listen to touch events
             if ('ontouchstart' in document) {
                 var d = document, ts = this._touchstart.bind(this), tm = this._touchmove.bind(this), te = this._touchend.bind(this);
-                d.addEventListener('touchstart', ts);
-                d.addEventListener('touchmove', tm);
-                d.addEventListener('touchend', te);
-                d.addEventListener('touchcancel', te);
+                d.addEventListener('touchstart', ts, { passive: false });
+                d.addEventListener('touchmove', tm, { passive: false });
+                d.addEventListener('touchend', te, { passive: false });
+                d.addEventListener('touchcancel', te, { passive: false });
             }
         }
         /**
@@ -292,10 +292,14 @@ var DragDropTouch;
             this._img = src.cloneNode(true);
             this._copyStyle(src, this._img);
             this._img.style.top = this._img.style.left = '-9999px';
+            this._img.style['-webkit-transform'] = 'translateX(-9999px) translateY(-9999px)'
             // if creating from drag source, apply offset and opacity
             if (!this._imgCustom) {
                 var rc = src.getBoundingClientRect(), pt = this._getPoint(e);
-                this._imgOffset = { x: pt.x - rc.left, y: pt.y - rc.top };
+                this._imgOffset = {
+                    x: pt.x - rc.left,
+                    y: pt.y - rc.top
+                };
                 this._img.style.opacity = DragDropTouch._OPACITY.toString();
             }
             // add image to document
@@ -313,16 +317,18 @@ var DragDropTouch;
         // move the drag image element
         DragDropTouch.prototype._moveImage = function (e) {
             var _this = this;
-            if (this._img) {
-                requestAnimationFrame(function () {
-                    var pt = _this._getPoint(e, true), s = _this._img.style;
-                    s.position = 'absolute';
-                    s.pointerEvents = 'none';
-                    s.zIndex = '999999';
-                    s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
-                    s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
-                });
-            }
+            requestAnimationFrame(function () {
+                var pt = _this._getPoint(e, true), s = _this._img.style;
+                s.position = 'fixed';
+                s.pointerEvents = 'none';
+                s.zIndex = '999999';
+                s.top = s.left = '0px'
+                var left =
+                    Math.round(pt.x - _this._imgOffset.x - window.pageXOffset);
+                var top =
+                    Math.round(pt.y - _this._imgOffset.y - window.pageYOffset);
+                s['-webkit-transform'] = `translateX(${left}px) translateY(${top}px)`
+            });
         };
         // copy properties from an object to another
         DragDropTouch.prototype._copyProps = function (dst, src, props) {
@@ -372,7 +378,7 @@ var DragDropTouch;
         // gets an element's closest draggable ancestor
         DragDropTouch.prototype._closestDraggable = function (e) {
             for (; e; e = e.parentElement) {
-                if (e.hasAttribute('draggable') && e.draggable) {
+                if (e.hasAttribute('draggable')) {
                     return e;
                 }
             }
@@ -391,7 +397,7 @@ var DragDropTouch;
         DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
         DragDropTouch._ptProps = 'pageX,pageY,clientX,clientY,screenX,screenY'.split(',');
         return DragDropTouch;
-    }());
+    })();
     DragDropTouch_1.DragDropTouch = DragDropTouch;
 })(DragDropTouch || (DragDropTouch = {}));
 //# sourceMappingURL=DragDropTouchNoWijmo.js.map
