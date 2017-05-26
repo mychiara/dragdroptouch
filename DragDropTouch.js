@@ -327,7 +327,7 @@ var DragDropTouch;
                     Math.round(pt.x - _this._imgOffset.x - window.pageXOffset);
                 var top =
                     Math.round(pt.y - _this._imgOffset.y - window.pageYOffset);
-                s['-webkit-transform'] = `translateX(${left}px) translateY(${top}px)`
+                s['-webkit-transform'] ='translateX(' + left + 'px) translateY(' + top + 'px)'
             });
         };
         // copy properties from an object to another
