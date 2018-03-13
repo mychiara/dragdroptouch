@@ -318,6 +318,9 @@ var DragDropTouch;
         DragDropTouch.prototype._moveImage = function (e) {
             var _this = this;
             requestAnimationFrame(function () {
+                if (!_this._img) {
+                    return;
+                }
                 var pt = _this._getPoint(e, true), s = _this._img.style;
                 s.position = 'fixed';
                 s.pointerEvents = 'none';
